@@ -12,64 +12,30 @@ import java.io.PrintWriter;
 import static java.lang.Integer.parseInt;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.concurrent.*;
 
 public class Server {
 
-    private PrintWriter out;
-    private BufferedReader in;
-
     private Socket client;
-
-    private int clientPort;
-    private String msg;
+    private ArrayList<ForHandleServer> handleThese = new ArrayList<>();
+    private ExecutorService pool = Executors.newFixedThreadPool(4);
 
     public Server() throws IOException {
         ServerSocket listener = new ServerSocket(4444);
-
-        System.out.println("[SERVER] Waiting for connection...");
-
-        try {
-
+        
+        while (true) {            
+            System.out.println("[SERVER] Waiting for connection...");
+            
             client = listener.accept();
-            System.out.println("[SERER] Connected..");
-
-            out = new PrintWriter(client.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
-            while (client.isConnected()) {
-                String request = in.readLine();
-                
-
-                if (request != null) {
-                    System.out.println("[CLIENT] " + request);
-                    parseRequest(request);
-                    out.println(String.valueOf(clientPort) + String.valueOf(4444)+":|" + msg);
-                }
-
-            }
-
-        } catch (Exception e) {
-            System.out.println("Closing!");
-            client.close();
-            listener.close();
-            out.close();
-            in.close();
+            
+            ForHandleServer handle = new ForHandleServer(client);
+            handleThese.add(handle);
+            
+            pool.execute(handle);
         }
+        
 
     }
 
-    private void parseRequest(String request) {
-        clientPort = parseInt(request.substring(4, 8));
-        int index = 0;
-        for (int i = 9; i < request.length(); i++) {
-            char one = request.charAt(i - 1);
-            char two = request.charAt(i);
-            if (one == ':' && two == '|') {
-                index = i + 1;
-            }
-        }
-
-        msg = request.substring(index, request.length());
-
-    }
 }
