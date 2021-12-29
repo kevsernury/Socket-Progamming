@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package tamsdndeneme;
 
 import java.io.BufferedReader;
@@ -25,24 +21,27 @@ public class Client {
         this.serverPort = serverPort;
         this.clientPort = clientPort;
 
-        socket = new Socket("127.0.0.1", port);
-
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
-        keyboard = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("> ");
-        String msg = keyboard.readLine();
-
-        String request = String.valueOf(serverPort) + String.valueOf(clientPort) + ":|" + msg;
-        out.println(request);
         try {
-            while (socket.isConnected()) {
 
-                String response = in.readLine();
-                if (response != null) {
-                    System.out.println("[SERVER] " + response);
+            while (true) {
+                socket = new Socket("127.0.0.1", port);
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                out = new PrintWriter(socket.getOutputStream(), true);
+                keyboard = new BufferedReader(new InputStreamReader(System.in));
+                System.out.print("> ");
+                String msg = keyboard.readLine();
+                int flag = 0;
+                while (socket.isConnected() && flag == 0) {
+                    String request = String.valueOf(serverPort) + String.valueOf(clientPort) + ":|" + msg;
+                    out.println(request);
+                    String response = in.readLine();
+                    if (response != null) {
+                        System.out.println("[SERVER] " + response);
+                        socket.close();
+                        flag = 1;
+                    }
+
                 }
-
             }
         } catch (Exception e) {
             System.out.println("Closing..");

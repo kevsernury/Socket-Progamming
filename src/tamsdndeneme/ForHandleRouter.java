@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package tamsdndeneme;
 
 import java.io.BufferedReader;
@@ -14,10 +10,7 @@ import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Kevsernur
- */
+
 public class ForHandleRouter implements Runnable {
 
     private Socket nextRouterCon;
@@ -52,7 +45,7 @@ public class ForHandleRouter implements Runnable {
 
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-            while (client.isConnected() && request == null) {
+            while (!client.isClosed() && request == null) {
                 request = in.readLine();
 
             }
@@ -65,7 +58,7 @@ public class ForHandleRouter implements Runnable {
                     out = new PrintWriter(controller.getOutputStream(), true);
                     in = new BufferedReader(new InputStreamReader(controller.getInputStream()));
                     int zeroflag = 0;
-                    while (controller.isConnected() && zeroflag == 0) {
+                    while (!controller.isClosed() && zeroflag == 0) {
                         if (priRouter == 0) {
                             out.println(String.valueOf(serverPort) + String.valueOf(clientPort) + String.valueOf(thisRouter) + ":|" + msg);
                         } else {
@@ -75,46 +68,61 @@ public class ForHandleRouter implements Runnable {
                         while (nextRouter == 0) {
                             nextRouter = parseInt(in.readLine());
                             int flag = 1;
-                            if (nextRouter != 0 && flag == 1) {
+
+                            if (nextRouter == 1) {
+                                System.out.println("Package Dropped!");
+                                out = new PrintWriter(client.getOutputStream(), true);
+                                out.println("Package Dropped!");
+                                client.close();///
+                            } else if (nextRouter != 0 && flag == 1) {
                                 controller.close();
-                                System.out.println(controller.isConnected());
                                 flag = 0;
                                 zeroflag = 1;
+                                System.err.println("This router "+ thisRouter);
                                 System.out.println("next router " + String.valueOf(nextRouter));
                             }
                         }
 
                     }
 
-                    System.out.println("3. try");
-                    nextRouterCon = new Socket("127.0.0.1", nextRouter);
-                    out = new PrintWriter(nextRouterCon.getOutputStream(), true);
-                    in = new BufferedReader(new InputStreamReader(nextRouterCon.getInputStream()));
+                    if (nextRouter != 1) {
+                        nextRouterCon = new Socket("127.0.0.1", nextRouter);
+                        out = new PrintWriter(nextRouterCon.getOutputStream(), true);
+                        in = new BufferedReader(new InputStreamReader(nextRouterCon.getInputStream()));
 
-                    if (nextRouterCon.isConnected()) {
-                        System.out.println("1 " + msg);
-                        out.println(String.valueOf(serverPort) + String.valueOf(clientPort) + String.valueOf(thisRouter) + ":|" + msg);
-                        response = in.readLine();
+                        if (!nextRouterCon.isClosed()) {
+                            System.out.println("The message " + msg);
+                            out.println(String.valueOf(serverPort) + String.valueOf(clientPort) + String.valueOf(thisRouter) + ":|" + msg);
+                            response = in.readLine();
 
-                        if (response != null) {
-                            System.out.println("1 " + msg);
-                            out = new PrintWriter(client.getOutputStream(), true);
-                            out.println(response);
+                            if (response != null) {
+                                
+                                out = new PrintWriter(client.getOutputStream(), true);
+                                out.println(response);
+                                client.close();///
+                                nextRouterCon.close();///
+                            } else {
+                                System.out.println("2 Closing!");
+                                client.close();
+                                listener.close();
+                                out.close();
+                                in.close();
+                            }
+
                         } else {
-                            System.out.println("2 Closing!");
+                            System.out.println("3 Closing!");
                             client.close();
                             listener.close();
                             out.close();
                             in.close();
                         }
-
-                    } else {
-                        System.out.println("3 Closing!");
-                        client.close();
-                        listener.close();
-                        out.close();
-                        in.close();
-                    }
+                    }else {
+                            System.out.println("5 Closing!");
+                            client.close();
+                            listener.close();
+                            out.close();
+                            in.close();
+                        }
 
                 } catch (IOException e) {
                     System.out.println("4 Closing!");
@@ -142,12 +150,16 @@ public class ForHandleRouter implements Runnable {
             char two = request.charAt(i);
             if (one == ':' && two == '|') {
                 index = i + 1;
+                break;
             }
         }
         msg = request.substring(index, request.length());
-        if (index > 15) {
+        if (index >= 14) {
             priRouter = parseInt(request.substring(8, 12));
         }
+        System.out.println("İfin içi " +"index: "+ index+" router: " +priRouter);
+        
+       
 
     }
 

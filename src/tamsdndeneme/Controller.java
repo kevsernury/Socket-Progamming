@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package tamsdndeneme;
 
 import java.io.BufferedReader;
@@ -19,7 +15,7 @@ import java.util.concurrent.Executors;
 public class Controller {
     
     private ArrayList<ForHandleController> handleThese = new ArrayList<>();
-    private ExecutorService pool = Executors.newFixedThreadPool(4);
+    private ExecutorService pool = Executors.newFixedThreadPool(500);
     
     private Socket router;
     

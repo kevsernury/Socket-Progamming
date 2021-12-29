@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package tamsdndeneme;
 
 import java.io.IOException;
@@ -15,7 +11,7 @@ import java.util.concurrent.Executors;
 public class Router {
 
     private ArrayList<ForHandleRouter> handleThese = new ArrayList<>();
-    private ExecutorService pool = Executors.newFixedThreadPool(4);
+    private ExecutorService pool = Executors.newFixedThreadPool(250);
     private Socket client;
 
     private int thisRouter;
@@ -34,7 +30,7 @@ public class Router {
                 handleThese.add(handle);
 
                 pool.execute(handle);
-
+                
             } catch (IOException e) {
                 System.out.println("5 Closing!");
                 client.close();

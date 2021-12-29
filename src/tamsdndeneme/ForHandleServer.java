@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package tamsdndeneme;
 
 import java.io.BufferedReader;
@@ -14,10 +10,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Kevsernur
- */
+
 public class ForHandleServer implements Runnable {
 
     private PrintWriter out;
@@ -39,13 +32,14 @@ public class ForHandleServer implements Runnable {
             out = new PrintWriter(client.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-            while (client.isConnected()) {
+            while (!client.isClosed()) {
                 String request = in.readLine();
 
                 if (request != null) {
                     System.out.println("[CLIENT] " + request);
                     parseRequest(request);
                     out.println(String.valueOf(clientPort) + String.valueOf(4444) + ":|" + msg);
+                    client.close();///
                 }
 
             }

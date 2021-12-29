@@ -3,8 +3,9 @@ package tamsdndeneme;
 
 import java.io.IOException;
 
-public class InitializeServer {
+public class InitializeRouter1004 {
      public static void main(String[] args) throws IOException {
-        Server server = new Server();
+        Router router = new Router(1004);
     }
+
 }

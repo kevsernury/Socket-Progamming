@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tamsdndeneme;
 
 import java.io.BufferedReader;
@@ -11,15 +6,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import static java.lang.Integer.parseInt;
 import java.net.Socket;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Kevsernur
- */
 public class ForHandleController implements Runnable {
-    
+
     private Socket router;
 
     private int serverPort;
@@ -38,9 +30,9 @@ public class ForHandleController implements Runnable {
     @Override
     public void run() {
         try {
-            
-                takeConnection(router);
-            
+
+            takeConnection(router);
+
         } catch (Exception e) {
             System.out.println("4 Closing!");
             try {
@@ -59,39 +51,84 @@ public class ForHandleController implements Runnable {
     }
 
     private void parseRequest(String request) {
-        System.out.println("Parse girildi");
         serverPort = parseInt(request.substring(0, 4));
         clientPort = parseInt(request.substring(4, 8));
         int index = 0;
         for (int i = 9; i < request.length(); i++) {
-            char one = request.charAt(i - 1);
+            char one = request.charAt(i - 1); 
             char two = request.charAt(i);
             if (one == ':' && two == '|') {
-                index = i + 1;
+                index = i + 1; //0123 4567 8901 2345 67 890
+                break;        // 4444 5555 1001 :|ms g 
+                              // 4444 5555 1001 1002 :| msg
             }
         }
         msg = request.substring(index, request.length());
-        if (index > 15) {
+        if (index >= 18) { 
             priRouter = parseInt(request.substring(8, 12));
             routerPort = parseInt(request.substring(12, 16));
-        } else if (index > 11) {
+        } else if (index >= 14) {
             routerPort = parseInt(request.substring(8, 12));
         }
-        System.out.println("Parse çıkıldı");
+        System.out.println("Server: " + serverPort);
+        System.out.println("Client: " + clientPort);
+        System.out.println("This Router: " + routerPort);
+        System.out.println("Previous Router: " + priRouter);
 
     }
 
     private void returnNextRouter() {
+
+        Random random = new Random();
+        int r = random.nextInt(2);
+        int r2 = random.nextInt(2);
+        System.out.println("random " + r2);
         switch (routerPort) {
             case 1001:
-                nextRouter = 1002;
+                nextRouter = 1004;
                 break;
             case 1002:
-                nextRouter = 1003;
+                if (clientPort == 5555) {
+                    nextRouter = 1005;
+                } else {
+                    nextRouter = 1003;
+                }
                 break;
             case 1003:
+                if (r == 1) {
+                    nextRouter = 1004;
+                } else {
+                    nextRouter = 1005;
+                }
+                break;
+            case 1004:
+                if (r2 == 1 && clientPort == 6666) {
+                    nextRouter = 1;
+                } else {
+                    nextRouter = 1007;
+                }
+                break;
+            case 1005:
+                if (clientPort == 6666) {
+                    nextRouter = 1008;
+                } else {
+                    nextRouter = 1006;
+                }
+                break;
+            case 1006:
+                if (r == 2) {
+                    nextRouter = 1007;
+                } else {
+                    nextRouter = 1008;
+                }
+                break;
+            case 1007:
                 nextRouter = serverPort;
                 break;
+            case 1008:
+                nextRouter = serverPort;
+                break;
+
         }
     }
 
