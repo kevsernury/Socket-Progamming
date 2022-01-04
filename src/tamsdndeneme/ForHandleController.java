@@ -55,16 +55,16 @@ public class ForHandleController implements Runnable {
         clientPort = parseInt(request.substring(4, 8));
         int index = 0;
         for (int i = 9; i < request.length(); i++) {
-            char one = request.charAt(i - 1); 
+            char one = request.charAt(i - 1);
             char two = request.charAt(i);
             if (one == ':' && two == '|') {
-                index = i + 1; //0123 4567 8901 2345 67 890
-                break;        // 4444 5555 1001 :|ms g 
-                              // 4444 5555 1001 1002 :| msg
+                index = i + 1;
+                break;
+
             }
         }
         msg = request.substring(index, request.length());
-        if (index >= 18) { 
+        if (index >= 18) {
             priRouter = parseInt(request.substring(8, 12));
             routerPort = parseInt(request.substring(12, 16));
         } else if (index >= 14) {
@@ -81,22 +81,31 @@ public class ForHandleController implements Runnable {
 
         Random random = new Random();
         int r = random.nextInt(2);
-        int r2 = random.nextInt(2);
-        System.out.println("random " + r2);
+        int r2 = random.nextInt(6); //Drop etme ihtimali
+
         switch (routerPort) {
             case 1001:
-                nextRouter = 1004;
+                if (r2 == 1) {
+                    nextRouter = 1;
+                } else {
+                    nextRouter = 1004;
+                }
                 break;
             case 1002:
-                if (clientPort == 5555) {
+                if (r2 == 1) {
+                    nextRouter = 1;
+                } else if (clientPort == 5555) {
                     nextRouter = 1005;
                 } else {
                     nextRouter = 1003;
                 }
                 break;
             case 1003:
+
                 if (r == 1) {
                     nextRouter = 1004;
+                } else if (priRouter == 1002) {
+                    nextRouter = 1;
                 } else {
                     nextRouter = 1005;
                 }
@@ -109,24 +118,36 @@ public class ForHandleController implements Runnable {
                 }
                 break;
             case 1005:
-                if (clientPort == 6666) {
+                if (r2 == 1) {
+                    nextRouter = 1;
+                } else if (clientPort == 6666) {
                     nextRouter = 1008;
                 } else {
                     nextRouter = 1006;
                 }
                 break;
             case 1006:
-                if (r == 2) {
+                if (r2 == 1) {
+                    nextRouter = 1;
+                } else if (r == 2) {
                     nextRouter = 1007;
                 } else {
                     nextRouter = 1008;
                 }
                 break;
             case 1007:
-                nextRouter = serverPort;
+                if (r2 == 1) {
+                    nextRouter = 1;
+                } else {
+                    nextRouter = serverPort;
+                }
                 break;
             case 1008:
-                nextRouter = serverPort;
+                if (r2 == 1) {
+                    nextRouter = 1;
+                } else {
+                    nextRouter = serverPort;
+                }
                 break;
 
         }

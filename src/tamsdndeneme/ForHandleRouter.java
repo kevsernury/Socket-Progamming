@@ -78,8 +78,11 @@ public class ForHandleRouter implements Runnable {
                                 controller.close();
                                 flag = 0;
                                 zeroflag = 1;
-                                System.err.println("This router "+ thisRouter);
-                                System.out.println("next router " + String.valueOf(nextRouter));
+                                System.out.println("This router: "+ thisRouter);
+                                System.out.println("Next router: " + String.valueOf(nextRouter));
+                                System.out.println("Client :" + clientPort);
+                                System.out.println("Server :" + serverPort);
+                               
                             }
                         }
 
@@ -99,8 +102,8 @@ public class ForHandleRouter implements Runnable {
                                 
                                 out = new PrintWriter(client.getOutputStream(), true);
                                 out.println(response);
-                                client.close();///
-                                nextRouterCon.close();///
+                                client.close();
+                                nextRouterCon.close();
                             } else {
                                 System.out.println("2 Closing!");
                                 client.close();
@@ -157,8 +160,7 @@ public class ForHandleRouter implements Runnable {
         if (index >= 14) {
             priRouter = parseInt(request.substring(8, 12));
         }
-        System.out.println("İfin içi " +"index: "+ index+" router: " +priRouter);
-        
+            
        
 
     }
