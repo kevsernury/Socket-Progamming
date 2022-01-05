@@ -19,7 +19,7 @@ public class Server {
     private ExecutorService pool = Executors.newFixedThreadPool(250);
 
     public Server() throws IOException {
-        ServerSocket listener = new ServerSocket(4444);
+        ServerSocket listener = new ServerSocket(1111);
         
         while (true) {            
             System.out.println("[SERVER] Waiting for connection...");

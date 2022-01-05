@@ -16,6 +16,6 @@ public class InitializeClient1002 {
 
         //1. serverPort, 2. clientPort
         
-        Client100 client = new Client100(6666, 4444);
+        Client100 client = new Client100(6666, 1111);
     }
 }

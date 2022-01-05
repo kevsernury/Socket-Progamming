@@ -19,6 +19,6 @@ public class InitializeClient {
             port = 1002;
         }
 
-        Client client = new Client(port, 2222, 4444);
+        Client client = new Client(port, 2222, 1111);
     }
 }

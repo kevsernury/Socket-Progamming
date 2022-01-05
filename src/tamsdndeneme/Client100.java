@@ -55,7 +55,13 @@ public class Client100 {
                     out.println(request);
                     String response = in.readLine();
                     if (response != null) {
-                        System.out.println("[SERVER] " + response);
+                        if (response.equals("Package Dropped!")) {
+                            System.out.println("[ROUTER] " + response);
+                            System.out.println("Resend package");
+                            i = i - 1;
+                        } else {
+                            System.out.println("[SERVER] " + response);
+                        }
                         socket.close();
                         flag = 1;
                     }
